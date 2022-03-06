@@ -24,3 +24,12 @@ img {
   margin: 20px 0;
   max-width: 200px;
 }
+
+p {
+  font-size: 36px;
+}
+
+button {
+  font-size: 36px;
+  min-width: 50px;
+}
