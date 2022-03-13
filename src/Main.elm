@@ -2,9 +2,8 @@ module Main exposing (main)
 
 import Basics exposing (..)
 import Browser
-import Browser.Events
 import Html exposing (..)
-import Html.Attributes exposing (style)
+import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
 import Set
 
@@ -15,7 +14,7 @@ import Set
 
 turnLimit : number
 turnLimit =
-    5
+    6
 
 
 maxWordLength : number
@@ -31,16 +30,7 @@ maxWordLength =
 -}
 listFind : (a -> Bool) -> List a -> Maybe a
 listFind isNeedle haystack =
-    let
-        filtered =
-            haystack |> List.filter isNeedle
-    in
-    case filtered of
-        [] ->
-            Nothing
-
-        _ ->
-            List.head filtered
+    haystack |> List.filter isNeedle |> List.head
 
 
 {-| Get all elements in a list except for the last
@@ -70,18 +60,28 @@ listZip xs ys =
 -}
 rowFromGuess : List Char -> List Char -> Row
 rowFromGuess word guess =
-    listZip word guess
-        |> List.map
-            (\( wordLetter, guessLetter ) ->
-                if guessLetter == wordLetter then
-                    ( guessLetter, Green )
+    let
+        missingLetterLength =
+            maxWordLength - List.length guess
 
-                else if List.member guessLetter word then
-                    ( guessLetter, Gold )
+        emptyTiles =
+            List.repeat missingLetterLength ( ' ', Absent )
 
-                else
-                    ( guessLetter, Black )
-            )
+        guessLetterTiles =
+            listZip word guess
+                |> List.map
+                    (\( wordLetter, guessLetter ) ->
+                        if guessLetter == wordLetter then
+                            ( guessLetter, Correct )
+
+                        else if List.member guessLetter word then
+                            ( guessLetter, Present )
+
+                        else
+                            ( guessLetter, Absent )
+                    )
+    in
+    List.append guessLetterTiles emptyTiles
 
 
 {-| Convert the entire board into a single list of unique tiles
@@ -92,26 +92,32 @@ toUniqueTiles board =
         letterPositionToInt : LetterPosition -> Int
         letterPositionToInt pos =
             case pos of
-                Gold ->
+                Present ->
                     1
 
-                Green ->
+                Correct ->
                     2
 
-                Black ->
-                    0
+                Absent ->
+                    3
+
+                Unknown ->
+                    4
 
         intToLetterPosition : Int -> LetterPosition
         intToLetterPosition int =
             case int of
                 1 ->
-                    Gold
+                    Present
 
                 2 ->
-                    Green
+                    Correct
+
+                3 ->
+                    Absent
 
                 _ ->
-                    Black
+                    Unknown
     in
     board
         |> List.concat
@@ -126,9 +132,10 @@ toUniqueTiles board =
 
 
 type LetterPosition
-    = Green
-    | Gold
-    | Black
+    = Correct
+    | Present
+    | Absent
+    | Unknown
 
 
 type alias Tile =
@@ -156,7 +163,7 @@ type alias Model =
 
 init : Model
 init =
-    { word = "daryl" |> String.toList
+    { word = "today" |> String.toList
     , board = []
     , inputBuffer = []
     }
@@ -222,23 +229,21 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        shownInputBuffer =
-            model.inputBuffer
-                |> List.map String.fromChar
-                |> String.concat
-
         -- Convert LetterPosition to CSS color
-        letterPosToColor : LetterPosition -> String
-        letterPosToColor pos =
+        letterPosToClassName : LetterPosition -> String
+        letterPosToClassName pos =
             case pos of
-                Green ->
-                    "green"
+                Correct ->
+                    "correct"
 
-                Gold ->
-                    "yellow"
+                Present ->
+                    "present"
 
-                Black ->
-                    "gray"
+                Absent ->
+                    "absent"
+
+                Unknown ->
+                    ""
 
         -- List of 'letter' buttons to guess with
         buttonList : String -> List (Html Msg)
@@ -256,42 +261,68 @@ view model =
                                 uniqueTiles
                                     |> listFind (\t -> (t |> Tuple.first) == letter)
 
-                            bgColor =
+                            tileClassName =
                                 case tileForThisLetter of
                                     Just tile ->
-                                        tile
-                                            |> Tuple.second
-                                            |> letterPosToColor
+                                        tile |> Tuple.second |> letterPosToClassName
 
                                     Nothing ->
-                                        "white"
+                                        ""
                         in
                         button
-                            [ onClick (Guess letter), style "background-color" bgColor ]
+                            [ onClick (Guess letter), class tileClassName ]
                             [ text (String.fromChar letter) ]
                     )
 
-        -- Row of Tiles HTML
-        shownRow : Row -> Html Msg
-        shownRow row =
-            tr []
+        -- Submitted guesses represented as rows of tiles
+        rowToHtml : Row -> Html Msg
+        rowToHtml row =
+            div [ class "row" ]
                 (row
                     |> List.map
                         (\tile ->
-                            td
-                                [ style "background-color" (tile |> Tuple.second |> letterPosToColor) ]
+                            div
+                                [ class (tile |> Tuple.second |> letterPosToClassName |> String.append "tile ") ]
                                 [ text (tile |> Tuple.first |> String.fromChar) ]
                         )
                 )
+
+        -- Current guess represented as a row of tiles
+        inputBufferTileRow : Html Msg
+        inputBufferTileRow =
+            rowFromGuess (List.repeat maxWordLength ' ') model.inputBuffer
+                |> List.map (\t -> ( Tuple.first t, Unknown ))
+                |> rowToHtml
+
+        -- Rows of empty tiles representing remaining turns
+        remainingRows : List (Html Msg)
+        remainingRows =
+            let
+                remainingTurnCount : Int
+                remainingTurnCount =
+                    turnLimit - List.length model.board
+
+                emptyTile : Html Msg
+                emptyTile =
+                    div [ class "tile" ] [ text " " ]
+            in
+            div [ class "row" ] (List.repeat maxWordLength emptyTile)
+                |> List.repeat (remainingTurnCount - 1)
     in
-    div []
-        [ table [] (model.board |> List.map shownRow)
-        , div [] (buttonList "qwertyuiop")
-        , div [] (buttonList "asdfghjkl")
-        , div [] (buttonList "zxcvbnm")
-        , p [] [ text shownInputBuffer ]
-        , button [ onClick Backspace ] [ text "←" ]
-        , button [ onClick Submit ] [ text "Submit" ]
+    div [ class "game" ]
+        [ header [] [ h1 [] [ text "Wordle" ] ]
+        , div [ class "board" ]
+            (remainingRows
+                |> List.append [ inputBufferTileRow ]
+                |> List.append (List.map rowToHtml model.board)
+            )
+        , div [ class "keyboard" ]
+            [ div [] (buttonList "qwertyuiop")
+            , div [] (buttonList "asdfghjkl")
+            , div [] (buttonList "zxcvbnm")
+            , button [ onClick Backspace ] [ text "←" ]
+            , button [ onClick Submit ] [ text "Submit" ]
+            ]
         ]
 
 

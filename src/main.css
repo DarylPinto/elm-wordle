@@ -5,15 +5,31 @@
   More context in the issue:
     https://github.com/halfzebra/create-elm-app/issues/320
 */
-[data-elm-hot="true"] {
+[data-elm-hot='true'] {
   height: inherit;
 }
 
+:root {
+  --game-width: 500px;
+  --present-color: #b59f3b;
+  --correct-color: #538d4e;
+  --absent-color: #3a3a3c;
+  --keyboard-unknown-color: #818384;
+  --tile-gutter-width: 5px;
+  --max-word-length: 5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 body {
-  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande', 'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
+  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande',
+    'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
   margin: 0;
   text-align: center;
-  color: #293c4b;
+  color: white;
+  background-color: #121213;
 }
 
 h1 {
@@ -32,4 +48,71 @@ p {
 button {
   font-size: 36px;
   min-width: 50px;
+}
+
+.game {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  max-width: var(--game-width);
+  margin: 0 auto;
+  height: 100vh;
+}
+
+.board {
+  display: flex;
+  flex-direction: column;
+}
+
+.board .row {
+  display: flex;
+  margin-bottom: var(--tile-gutter-width);
+}
+
+.board .row .tile {
+  display: flex;
+  border: 3px solid #565758;
+  width: calc(
+    (var(--game-width) / var(--max-word-length)) -
+      (var(--tile-gutter-width) * (var(--max-word-length) - 1))
+  );
+  aspect-ratio: 1;
+  justify-content: center;
+  align-items: center;
+  font-size: 3rem;
+  text-transform: uppercase;
+  background-color: #121213;
+  margin-right: var(--tile-gutter-width);
+}
+
+.board .row .tile:last-child {
+  margin-right: 0;
+}
+
+.board .row .tile.absent {
+  background-color: var(--absent-color);
+  border-color: var(--absent-color);
+}
+.board .row .tile.present {
+  background-color: var(--present-color);
+  border-color: var(--present-color);
+}
+.board .row .tile.correct {
+  background-color: var(--correct-color);
+  border-color: var(--correct-color);
+}
+
+.keyboard button {
+  background-color: var(--keyboard-unknown-color);
+  border-radius: 5px;
+  border: none;
+  color: white;
+  text-transform: uppercase;
+  font-size: .7rem;
+  height: 50px;
+  min-width: 30px;
+  margin-right: 4px;
+  margin-bottom: 4px;
+  cursor: pointer;
 }
