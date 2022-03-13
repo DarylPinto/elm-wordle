@@ -319,9 +319,13 @@ view model =
         , div [ class "keyboard" ]
             [ div [] (buttonList "qwertyuiop")
             , div [] (buttonList "asdfghjkl")
-            , div [] (buttonList "zxcvbnm")
-            , button [ onClick Backspace ] [ text "←" ]
-            , button [ onClick Submit ] [ text "Submit" ]
+            , div []
+                (List.concat
+                    [ [ button [ onClick Submit ] [ text "Enter" ] ]
+                    , buttonList "zxcvbnm"
+                    , [ button [ onClick Backspace, class "backspace" ] [ text "⌫" ] ]
+                    ]
+                )
             ]
         ]
 

@@ -60,6 +60,8 @@ button {
   height: 100vh;
 }
 
+/* Game Board */
+
 .board {
   display: flex;
   flex-direction: column;
@@ -94,14 +96,18 @@ button {
   background-color: var(--absent-color);
   border-color: var(--absent-color);
 }
+
 .board .row .tile.present {
   background-color: var(--present-color);
   border-color: var(--present-color);
 }
+
 .board .row .tile.correct {
   background-color: var(--correct-color);
   border-color: var(--correct-color);
 }
+
+/* Keyboard */
 
 .keyboard button {
   background-color: var(--keyboard-unknown-color);
@@ -109,10 +115,31 @@ button {
   border: none;
   color: white;
   text-transform: uppercase;
-  font-size: .7rem;
+  font-size: 0.7rem;
   height: 50px;
   min-width: 30px;
   margin-right: 4px;
   margin-bottom: 4px;
   cursor: pointer;
+}
+
+.keyboard > div {
+  display: flex;
+  justify-content: center;
+}
+
+.keyboard button.backspace {
+  font-size: 1.2rem;
+}
+
+.keyboard button.absent {
+  background-color: var(--absent-color);
+}
+
+.keyboard button.present {
+  background-color: var(--present-color);
+}
+
+.keyboard button.correct {
+  background-color: var(--correct-color);
 }
