@@ -10,7 +10,7 @@
 }
 
 :root {
-  --game-width: 500px;
+  --game-width: 450px;
   --present-color: #b59f3b;
   --correct-color: #538d4e;
   --absent-color: #3a3a3c;
@@ -74,7 +74,7 @@ button {
 
 .board .row .tile {
   display: flex;
-  border: 3px solid #565758;
+  border: 2px solid #565758;
   width: calc(
     (var(--game-width) / var(--max-word-length)) -
       (var(--tile-gutter-width) * (var(--max-word-length) - 1))
@@ -115,11 +115,11 @@ button {
   border: none;
   color: white;
   text-transform: uppercase;
-  font-size: 0.7rem;
-  height: 50px;
-  min-width: 30px;
-  margin-right: 4px;
-  margin-bottom: 4px;
+  font-size: 0.8rem;
+  min-width: calc(var(--game-width) / 11);
+  aspect-ratio: 0.74;
+  margin-right: 6px;
+  margin-bottom: 6px;
   cursor: pointer;
 }
 
@@ -132,6 +132,12 @@ button {
   font-size: 1.2rem;
 }
 
+.keyboard button.backspace,
+.keyboard button.enter {
+  min-width: calc(var(--game-width) / 8);
+  aspect-ratio: auto;
+}
+
 .keyboard button.absent {
   background-color: var(--absent-color);
 }
@@ -142,4 +148,8 @@ button {
 
 .keyboard button.correct {
   background-color: var(--correct-color);
+}
+
+.loss-text {
+  font-size: 1rem;
 }

@@ -3,7 +3,7 @@ module Main exposing (main)
 import Basics exposing (..)
 import Browser
 import Html exposing (..)
-import Html.Attributes exposing (class, style)
+import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Set
 
@@ -127,6 +127,17 @@ toUniqueTiles board =
         |> List.map (\( char, int ) -> ( char, intToLetterPosition int ))
 
 
+{-| Used for conditional rendering
+-}
+htmlIf : Bool -> Html Msg -> Html Msg
+htmlIf condition html =
+    if condition then
+        html
+
+    else
+        text ""
+
+
 
 ---- TYPES ----
 
@@ -150,6 +161,12 @@ type alias Board =
     List Row
 
 
+type GameState
+    = Win
+    | Loss
+    | Playing
+
+
 
 ---- MODEL ----
 
@@ -158,14 +175,16 @@ type alias Model =
     { word : List Char
     , board : Board
     , inputBuffer : List Char
+    , gameState : GameState
     }
 
 
 init : Model
 init =
-    { word = "today" |> String.toList
+    { word = "daryl" |> String.toList
     , board = []
     , inputBuffer = []
+    , gameState = Playing
     }
 
 
@@ -182,6 +201,9 @@ type Msg
 update : Msg -> Model -> Model
 update msg model =
     let
+        isFinalTurn =
+            List.length model.board == turnLimit - 1
+
         isMaxTurnCountReached =
             List.length model.board >= turnLimit
 
@@ -190,11 +212,16 @@ update msg model =
     in
     case msg of
         Guess letter ->
-            if not isInputBufferFull && not isMaxTurnCountReached then
-                { model | inputBuffer = List.append model.inputBuffer [ letter ] }
+            case model.gameState of
+                Playing ->
+                    if not isInputBufferFull && not isMaxTurnCountReached then
+                        { model | inputBuffer = List.append model.inputBuffer [ letter ] }
 
-            else
-                model
+                    else
+                        model
+
+                _ ->
+                    model
 
         Backspace ->
             { model
@@ -211,11 +238,22 @@ update msg model =
             let
                 newRow =
                     rowFromGuess model.word model.inputBuffer
+
+                newGameState =
+                    if model.inputBuffer == model.word then
+                        Win
+
+                    else if isFinalTurn then
+                        Loss
+
+                    else
+                        Playing
             in
             if isInputBufferFull && not isMaxTurnCountReached then
                 { model
                     | board = List.append model.board [ newRow ]
                     , inputBuffer = []
+                    , gameState = newGameState
                 }
 
             else
@@ -287,41 +325,53 @@ view model =
                         )
                 )
 
+        remainingTurnCount : Int
+        remainingTurnCount =
+            turnLimit - List.length model.board
+
         -- Current guess represented as a row of tiles
         inputBufferTileRow : Html Msg
         inputBufferTileRow =
             rowFromGuess (List.repeat maxWordLength ' ') model.inputBuffer
                 |> List.map (\t -> ( Tuple.first t, Unknown ))
                 |> rowToHtml
+                |> htmlIf (remainingTurnCount > 0)
 
         -- Rows of empty tiles representing remaining turns
         remainingRows : List (Html Msg)
         remainingRows =
-            let
-                remainingTurnCount : Int
-                remainingTurnCount =
-                    turnLimit - List.length model.board
-
-                emptyTile : Html Msg
-                emptyTile =
-                    div [ class "tile" ] [ text " " ]
-            in
-            div [ class "row" ] (List.repeat maxWordLength emptyTile)
+            div [ class "row" ] (List.repeat maxWordLength (div [ class "tile" ] [ text " " ]))
                 |> List.repeat (remainingTurnCount - 1)
+
+        gameStateText : Html Msg
+        gameStateText =
+            case model.gameState of
+                Win ->
+                    h2 [] [ text "Congratulations!" ]
+
+                Loss ->
+                    div []
+                        [ h2 [] [ text "Maybe next time" ]
+                        , p [ class "loss-text" ] [ text ("The word was " ++ String.fromList model.word) ]
+                        ]
+
+                _ ->
+                    text ""
     in
     div [ class "game" ]
-        [ header [] [ h1 [] [ text "Wordle" ] ]
+        [ header [] [ h1 [] [ text "wordle" ] ]
         , div [ class "board" ]
             (remainingRows
                 |> List.append [ inputBufferTileRow ]
                 |> List.append (List.map rowToHtml model.board)
             )
+        , htmlIf (model.gameState /= Playing) gameStateText
         , div [ class "keyboard" ]
             [ div [] (buttonList "qwertyuiop")
             , div [] (buttonList "asdfghjkl")
             , div []
                 (List.concat
-                    [ [ button [ onClick Submit ] [ text "Enter" ] ]
+                    [ [ button [ onClick Submit, class "enter" ] [ text "Enter" ] ]
                     , buttonList "zxcvbnm"
                     , [ button [ onClick Backspace, class "backspace" ] [ text "⌫" ] ]
                     ]
