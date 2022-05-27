@@ -53,6 +53,13 @@ listZip xs ys =
     List.map2 Tuple.pair xs ys
 
 
+{-| Create a new list with no duplicates
+-}
+listUnique : List comparable -> List comparable
+listUnique xs =
+    xs |> Set.fromList |> Set.toList
+
+
 
 -- Utility functions
 
@@ -93,10 +100,10 @@ toUniqueTiles board =
         letterPositionToInt : LetterPosition -> Int
         letterPositionToInt pos =
             case pos of
-                Present ->
+                Correct ->
                     1
 
-                Correct ->
+                Present ->
                     2
 
                 Absent ->
@@ -109,10 +116,10 @@ toUniqueTiles board =
         intToLetterPosition int =
             case int of
                 1 ->
-                    Present
+                    Correct
 
                 2 ->
-                    Correct
+                    Present
 
                 3 ->
                     Absent
@@ -123,8 +130,7 @@ toUniqueTiles board =
     board
         |> List.concat
         |> List.map (\( char, pos ) -> ( char, letterPositionToInt pos ))
-        |> Set.fromList
-        |> Set.toList
+        |> listUnique
         |> List.map (\( char, int ) -> ( char, intToLetterPosition int ))
 
 
