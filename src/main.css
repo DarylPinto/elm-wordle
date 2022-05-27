@@ -65,6 +65,7 @@ button {
 .board {
   display: flex;
   flex-direction: column;
+  user-select: none;
 }
 
 .board .row {
@@ -121,6 +122,7 @@ button {
   margin-right: 6px;
   margin-bottom: 6px;
   cursor: pointer;
+  user-select: none;
 }
 
 .keyboard > div {

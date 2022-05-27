@@ -369,7 +369,7 @@ view model =
                     text ""
     in
     div [ class "game" ]
-        [ header [] [ h1 [] [ text "wordle" ] ]
+        [ header [] [ h1 [] [ text "elm wordle" ] ]
         , div [ class "board" ]
             (remainingRows
                 |> List.append [ inputBufferTileRow ]
