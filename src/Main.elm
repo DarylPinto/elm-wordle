@@ -2,6 +2,7 @@ module Main exposing (main)
 
 import Basics exposing (..)
 import Browser
+import Dictionary exposing (dictionary)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
@@ -248,8 +249,11 @@ update msg model =
 
                     else
                         Playing
+
+                isGuessInDictionary =
+                    List.member (String.fromList model.inputBuffer) dictionary
             in
-            if isInputBufferFull && not isMaxTurnCountReached then
+            if isInputBufferFull && not isMaxTurnCountReached && isGuessInDictionary then
                 { model
                     | board = List.append model.board [ newRow ]
                     , inputBuffer = []
