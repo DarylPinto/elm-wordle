@@ -5,7 +5,7 @@
   More context in the issue:
     https://github.com/halfzebra/create-elm-app/issues/320
 */
-[data-elm-hot='true'] {
+[data-elm-hot="true"] {
   height: inherit;
 }
 
@@ -24,8 +24,8 @@
 }
 
 body {
-  font-family: 'Source Sans Pro', 'Trebuchet MS', 'Lucida Grande',
-    'Bitstream Vera Sans', 'Helvetica Neue', sans-serif;
+  font-family: "Source Sans Pro", "Trebuchet MS", "Lucida Grande",
+    "Bitstream Vera Sans", "Helvetica Neue", sans-serif;
   margin: 0;
   text-align: center;
   color: white;
@@ -56,6 +56,7 @@ button {
   justify-content: space-between;
   align-items: center;
   max-width: var(--game-width);
+  width: 100%;
   margin: 0 auto;
   height: 100vh;
 }
@@ -76,7 +77,8 @@ button {
 .board .row .tile {
   display: flex;
   border: 2px solid #565758;
-  width: calc(
+  width: calc(85vw / var(--max-word-length));
+  max-width: calc(
     (var(--game-width) / var(--max-word-length)) -
       (var(--tile-gutter-width) * (var(--max-word-length) - 1))
   );
@@ -110,6 +112,11 @@ button {
 
 /* Keyboard */
 
+.keyboard {
+  width: 90vw;
+  max-width: var(--game-width);
+}
+
 .keyboard button {
   background-color: var(--keyboard-unknown-color);
   border-radius: 5px;
@@ -117,12 +124,19 @@ button {
   color: white;
   text-transform: uppercase;
   font-size: 0.8rem;
-  min-width: calc(var(--game-width) / 11);
+  min-width: calc(100% / 11);
   aspect-ratio: 0.74;
-  margin-right: 6px;
+  margin-left: 3px;
+  margin-right: 3px;
   margin-bottom: 6px;
   cursor: pointer;
   user-select: none;
+}
+
+@media screen and (max-width: 500px) {
+  .keyboard button {
+    aspect-ratio: 0.6;
+  }
 }
 
 .keyboard > div {
