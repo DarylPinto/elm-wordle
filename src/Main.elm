@@ -2,15 +2,13 @@ module Main exposing (main)
 
 import Basics exposing (..)
 import Browser
+import Browser.Events
 import Dictionary exposing (dictionary)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
+import Json.Decode as Decode
 import Set
-
-
-
--- Constants
 
 
 turnLimit : number
@@ -21,6 +19,11 @@ turnLimit =
 maxWordLength : number
 maxWordLength =
     5
+
+
+alphabet : List Char
+alphabet =
+    "abcdefghijklmnopqrstuvwxyz" |> String.toList
 
 
 
@@ -146,6 +149,48 @@ htmlIf condition html =
 
 
 
+-- SUBSCRIPTIONS
+
+
+{-| Keyboard event listener
+<https://stackoverflow.com/a/53800798/7003127>
+-}
+subscriptions : Model -> Sub Msg
+subscriptions model =
+    let
+        toKey : String -> Msg
+        toKey string =
+            let
+                letter : Char
+                letter =
+                    string
+                        |> String.toLower
+                        |> String.uncons
+                        |> Maybe.withDefault ( 'a', "" )
+                        |> Tuple.first
+            in
+            case string of
+                "Enter" ->
+                    Submit
+
+                "Backspace" ->
+                    Backspace
+
+                _ ->
+                    if List.member letter alphabet then
+                        Guess letter
+
+                    else
+                        Noop
+
+        keyDecoder : Decode.Decoder Msg
+        keyDecoder =
+            Decode.map toKey (Decode.field "key" Decode.string)
+    in
+    Browser.Events.onKeyDown keyDecoder
+
+
+
 ---- TYPES ----
 
 
@@ -186,13 +231,15 @@ type alias Model =
     }
 
 
-init : Model
-init =
-    { word = "daryl" |> String.toList
-    , board = []
-    , inputBuffer = []
-    , gameState = Playing
-    }
+init : () -> ( Model, Cmd Msg )
+init _ =
+    ( { word = "daryl" |> String.toList
+      , board = []
+      , inputBuffer = []
+      , gameState = Playing
+      }
+    , Cmd.none
+    )
 
 
 
@@ -200,12 +247,13 @@ init =
 
 
 type Msg
-    = Guess Char
+    = Noop
+    | Guess Char
     | Backspace
     | Submit
 
 
-update : Msg -> Model -> Model
+update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     let
         isFinalTurn =
@@ -218,20 +266,23 @@ update msg model =
             List.length model.inputBuffer == maxWordLength
     in
     case msg of
+        Noop ->
+            ( model, Cmd.none )
+
         Guess letter ->
             case model.gameState of
                 Playing ->
                     if not isInputBufferFull && not isMaxTurnCountReached then
-                        { model | inputBuffer = List.append model.inputBuffer [ letter ] }
+                        ( { model | inputBuffer = List.append model.inputBuffer [ letter ] }, Cmd.none )
 
                     else
-                        model
+                        ( model, Cmd.none )
 
                 _ ->
-                    model
+                    ( model, Cmd.none )
 
         Backspace ->
-            { model
+            ( { model
                 | inputBuffer =
                     case listInit model.inputBuffer of
                         Just chars ->
@@ -239,7 +290,9 @@ update msg model =
 
                         Nothing ->
                             []
-            }
+              }
+            , Cmd.none
+            )
 
         Submit ->
             let
@@ -260,14 +313,16 @@ update msg model =
                     List.member (String.fromList model.inputBuffer) dictionary
             in
             if isInputBufferFull && not isMaxTurnCountReached && isGuessInDictionary then
-                { model
+                ( { model
                     | board = List.append model.board [ newRow ]
                     , inputBuffer = []
                     , gameState = newGameState
-                }
+                  }
+                , Cmd.none
+                )
 
             else
-                model
+                ( model, Cmd.none )
 
 
 
@@ -396,4 +451,9 @@ view model =
 
 main : Program () Model Msg
 main =
-    Browser.sandbox { init = init, update = update, view = view }
+    Browser.element
+        { init = init
+        , update = update
+        , view = view
+        , subscriptions = subscriptions
+        }
