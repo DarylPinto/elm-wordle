@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/elm-wordle/precache-manifest.b53b8ba723aaadfb8c84db0e3b714a33.js"
+  "/elm-wordle/precache-manifest.e0af046fdc2067e8a8b203d007d7e719.js"
 );
 
 workbox.core.skipWaiting();
