@@ -91,6 +91,10 @@ button {
   margin-right: var(--tile-gutter-width);
 }
 
+.board .row .tile:empty {
+  border-color: var(--absent-color);
+}
+
 .board .row .tile:last-child {
   margin-right: 0;
 }

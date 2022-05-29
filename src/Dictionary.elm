@@ -3,16 +3,22 @@ module Dictionary exposing (answers, guessableWords)
 import Array exposing (Array)
 
 
+{-| List of all possible words that can be guessed
+-}
 guessableWords : List String
 guessableWords =
     List.append uniqueGuessableWords answerList
 
 
+{-| Array (not List) of all possible answers
+-}
 answers : Array String
 answers =
     Array.fromList answerList
 
 
+{-| List of words that can be guessed, but will never be answers
+-}
 uniqueGuessableWords : List String
 uniqueGuessableWords =
     [ "aahed"
@@ -20890,6 +20896,8 @@ uniqueGuessableWords =
     ]
 
 
+{-| List of all possible answers
+-}
 answerList : List String
 answerList =
     [ "about"

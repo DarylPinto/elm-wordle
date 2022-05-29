@@ -408,9 +408,22 @@ view model =
                 (row
                     |> List.map
                         (\tile ->
+                            let
+                                -- if the character in this tile is empty (' '),
+                                -- then don't put any children within the tile
+                                -- HTML. This allows us to style empty tiles with
+                                -- CSS very easily
+                                innerText : List (Html Msg)
+                                innerText =
+                                    if (tile |> Tuple.first) == ' ' then
+                                        []
+
+                                    else
+                                        [ text (tile |> Tuple.first |> String.fromChar) ]
+                            in
                             div
                                 [ class (tile |> Tuple.second |> letterPosToClassName |> String.append "tile ") ]
-                                [ text (tile |> Tuple.first |> String.fromChar) ]
+                                innerText
                         )
                 )
 
@@ -429,7 +442,7 @@ view model =
         -- Rows of empty tiles representing remaining turns
         remainingRows : List (Html Msg)
         remainingRows =
-            div [ class "row" ] (List.repeat maxWordLength (div [ class "tile" ] [ text " " ]))
+            div [ class "row" ] (List.repeat maxWordLength (div [ class "tile" ] []))
                 |> List.repeat (remainingTurnCount - 1)
 
         gameStateText : Html Msg
