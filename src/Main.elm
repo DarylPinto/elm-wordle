@@ -1,22 +1,24 @@
 module Main exposing (main)
 
+import Array
 import Basics exposing (..)
 import Browser
 import Browser.Events
-import Dictionary exposing (dictionary)
+import Dictionary exposing (answers, guessableWords)
 import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Json.Decode as Decode
+import Random
 import Set
 
 
-turnLimit : number
+turnLimit : Int
 turnLimit =
     6
 
 
-maxWordLength : number
+maxWordLength : Int
 maxWordLength =
     5
 
@@ -24,6 +26,11 @@ maxWordLength =
 alphabet : List Char
 alphabet =
     "abcdefghijklmnopqrstuvwxyz" |> String.toList
+
+
+defaultWord : String
+defaultWord =
+    "hello"
 
 
 
@@ -149,14 +156,14 @@ htmlIf condition html =
 
 
 
--- SUBSCRIPTIONS
+---- SUBSCRIPTIONS ----
 
 
 {-| Keyboard event listener
 <https://stackoverflow.com/a/53800798/7003127>
 -}
 subscriptions : Model -> Sub Msg
-subscriptions model =
+subscriptions _ =
     let
         toKey : String -> Msg
         toKey string =
@@ -233,12 +240,17 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    ( { word = "daryl" |> String.toList
+    let
+        index : Random.Generator Int
+        index =
+            Random.int 0 ((answers |> Array.length) - 1)
+    in
+    ( { word = defaultWord |> String.toList
       , board = []
       , inputBuffer = []
       , gameState = Playing
       }
-    , Cmd.none
+    , Random.generate SetWord index
     )
 
 
@@ -248,6 +260,7 @@ init _ =
 
 type Msg
     = Noop
+    | SetWord Int
     | Guess Char
     | Backspace
     | Submit
@@ -268,6 +281,17 @@ update msg model =
     case msg of
         Noop ->
             ( model, Cmd.none )
+
+        SetWord index ->
+            ( { model
+                | word =
+                    answers
+                        |> Array.get index
+                        |> Maybe.withDefault defaultWord
+                        |> String.toList
+              }
+            , Cmd.none
+            )
 
         Guess letter ->
             case model.gameState of
@@ -309,10 +333,10 @@ update msg model =
                     else
                         Playing
 
-                isGuessInDictionary =
-                    List.member (String.fromList model.inputBuffer) dictionary
+                isInputBufferAGuessableWord =
+                    List.member (String.fromList model.inputBuffer) guessableWords
             in
-            if isInputBufferFull && not isMaxTurnCountReached && isGuessInDictionary then
+            if isInputBufferFull && not isMaxTurnCountReached && isInputBufferAGuessableWord then
                 ( { model
                     | board = List.append model.board [ newRow ]
                     , inputBuffer = []
