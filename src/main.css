@@ -89,10 +89,31 @@ button {
   text-transform: uppercase;
   background-color: #121213;
   margin-right: var(--tile-gutter-width);
+  transition: 0.1s;
+}
+
+@keyframes bounce {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  55% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 .board .row .tile:empty {
   border-color: var(--absent-color);
+}
+
+.board .row .tile:not(.tile:empty) {
+  animation-name: bounce;
+  animation-duration: 0.2s;
 }
 
 .board .row .tile:last-child {

@@ -454,7 +454,7 @@ view model =
                 Loss ->
                     div []
                         [ h2 [] [ text "Maybe next time" ]
-                        , p [ class "loss-text" ] [ text ("The word was " ++ String.fromList model.word) ]
+                        , p [ class "loss-text" ] [ text ("The word was \"" ++ String.fromList model.word ++ "\"") ]
                         ]
 
                 _ ->
