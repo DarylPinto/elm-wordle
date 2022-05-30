@@ -4,7 +4,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/elm-wordle/favicon.ico"
   },
   {
-    "revision": "7ba3bcb1b7b7f9224a73588785cd2944",
+    "revision": "9e9fcc6fc51773c75346652855a48415",
     "url": "/elm-wordle/index.html"
   },
   {
@@ -16,12 +16,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/elm-wordle/manifest.json"
   },
   {
-    "revision": "810acb8fd74522c97a3c",
+    "revision": "014e588a5ac2f5950ddf",
     "url": "/elm-wordle/static/css/main.10c703f4.chunk.css"
   },
   {
-    "revision": "810acb8fd74522c97a3c",
-    "url": "/elm-wordle/static/js/main.810acb8f.chunk.js"
+    "revision": "014e588a5ac2f5950ddf",
+    "url": "/elm-wordle/static/js/main.014e588a.chunk.js"
   },
   {
     "revision": "96d314025c1309653a03",
