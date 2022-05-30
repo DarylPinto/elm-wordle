@@ -168,13 +168,9 @@ subscriptions _ =
         toKey : String -> Msg
         toKey string =
             let
-                letter : Char
-                letter =
-                    string
-                        |> String.toLower
-                        |> String.uncons
-                        |> Maybe.withDefault ( 'a', "" )
-                        |> Tuple.first
+                isKeyInAplhabet : Bool
+                isKeyInAplhabet =
+                    List.member string (alphabet |> List.map String.fromChar)
             in
             case string of
                 "Enter" ->
@@ -184,8 +180,13 @@ subscriptions _ =
                     Backspace
 
                 _ ->
-                    if List.member letter alphabet then
-                        Guess letter
+                    if isKeyInAplhabet then
+                        case string |> String.toList |> List.head of
+                            Just char ->
+                                Guess char
+
+                            Nothing ->
+                                Noop
 
                     else
                         Noop
