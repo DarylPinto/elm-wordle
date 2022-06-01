@@ -194,3 +194,18 @@ button {
 .loss-text {
   font-size: 1rem;
 }
+
+.toast {
+  pointer-events: none;
+  position: fixed;
+  padding: 20px;
+  top: 200px;
+  background-color: white;
+  color: black;
+  border-radius: 10px;
+  box-shadow: 0 0 10px black;
+}
+
+.toast:empty {
+  display: none;
+}

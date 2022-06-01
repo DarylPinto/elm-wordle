@@ -9,8 +9,10 @@ import Html exposing (..)
 import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Json.Decode as Decode
+import Process
 import Random
 import Set
+import Task
 
 
 turnLimit : Int
@@ -236,6 +238,7 @@ type alias Model =
     , board : Board
     , inputBuffer : List Char
     , gameState : GameState
+    , toastMessage : Maybe String
     }
 
 
@@ -250,6 +253,7 @@ init _ =
       , board = []
       , inputBuffer = []
       , gameState = Playing
+      , toastMessage = Nothing
       }
     , Random.generate SetWord index
     )
@@ -265,6 +269,8 @@ type Msg
     | Guess Char
     | Backspace
     | Submit
+    | ShowToast String
+    | HideToast
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -319,6 +325,14 @@ update msg model =
             , Cmd.none
             )
 
+        ShowToast message ->
+            ( { model | toastMessage = Just message }
+            , Task.perform (\_ -> HideToast) (Process.sleep 2000)
+            )
+
+        HideToast ->
+            ( { model | toastMessage = Nothing }, Cmd.none )
+
         Submit ->
             let
                 newRow =
@@ -345,6 +359,9 @@ update msg model =
                   }
                 , Cmd.none
                 )
+
+            else if isInputBufferFull && not isInputBufferAGuessableWord then
+                update (ShowToast "Not in word list") model
 
             else
                 ( model, Cmd.none )
@@ -460,6 +477,15 @@ view model =
 
                 _ ->
                     text ""
+
+        toastContents : List (Html Msg)
+        toastContents =
+            case model.toastMessage of
+                Just message ->
+                    [ text message ]
+
+                Nothing ->
+                    []
     in
     div [ class "game" ]
         [ header [] [ h1 [] [ text "elm wordle" ] ]
@@ -480,6 +506,7 @@ view model =
                     ]
                 )
             ]
+        , div [ class "toast" ] toastContents
         ]
 
 
