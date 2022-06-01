@@ -1,7 +1,7 @@
 {
-  "main.css": "/elm-wordle/static/css/main.10c703f4.chunk.css",
-  "main.js": "/elm-wordle/static/js/main.7850a3cd.chunk.js",
-  "main.js.map": "/elm-wordle/static/js/main.7850a3cd.chunk.js.map",
+  "main.css": "/elm-wordle/static/css/main.6fb2969f.chunk.css",
+  "main.js": "/elm-wordle/static/js/main.8f8afdb7.chunk.js",
+  "main.js.map": "/elm-wordle/static/js/main.8f8afdb7.chunk.js.map",
   "runtime~main.js": "/elm-wordle/static/js/runtime~main.96d31402.js",
   "runtime~main.js.map": "/elm-wordle/static/js/runtime~main.96d31402.js.map",
   "vendors~main.js": "/elm-wordle/static/js/vendors~main.354e092f.chunk.js",
@@ -11,5 +11,5 @@
   "index.html": "/elm-wordle/index.html",
   "logo.svg": "/elm-wordle/logo.svg",
   "manifest.json": "/elm-wordle/manifest.json",
-  "precache-manifest.75fc9f3a620cf9bb16dc98d64bf4f390.js": "/elm-wordle/precache-manifest.75fc9f3a620cf9bb16dc98d64bf4f390.js"
+  "precache-manifest.278d52441d776cf17e90e447af08b3cf.js": "/elm-wordle/precache-manifest.278d52441d776cf17e90e447af08b3cf.js"
 }
