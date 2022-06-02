@@ -245,8 +245,8 @@ type alias Model =
 init : () -> ( Model, Cmd Msg )
 init _ =
     let
-        index : Random.Generator Int
-        index =
+        answerIndex : Random.Generator Int
+        answerIndex =
             Random.int 0 ((answers |> Array.length) - 1)
     in
     ( { word = defaultWord |> String.toList
@@ -255,7 +255,7 @@ init _ =
       , gameState = Playing
       , toastMessages = []
       }
-    , Random.generate SetWord index
+    , Random.generate SetWord answerIndex
     )
 
 
@@ -289,11 +289,11 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        SetWord index ->
+        SetWord answerIndex ->
             ( { model
                 | word =
                     answers
-                        |> Array.get index
+                        |> Array.get answerIndex
                         |> Maybe.withDefault defaultWord
                         |> String.toList
               }
@@ -498,9 +498,11 @@ view model =
     div [ class "game" ]
         [ header [] [ h1 [] [ text "elm wordle" ] ]
         , div [ class "board" ]
-            (remainingRows
-                |> List.append [ inputBufferTileRow ]
-                |> List.append (List.map rowToHtml model.board)
+            (List.concat
+                [ List.map rowToHtml model.board
+                , [ inputBufferTileRow ]
+                , remainingRows
+                ]
             )
         , htmlIf (model.gameState /= Playing) gameStateText
         , div [ class "keyboard" ]
