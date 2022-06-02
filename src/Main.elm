@@ -188,10 +188,10 @@ subscriptions _ =
                                 Guess char
 
                             Nothing ->
-                                Noop
+                                NoOp
 
                     else
-                        Noop
+                        NoOp
 
         keyDecoder : Decode.Decoder Msg
         keyDecoder =
@@ -238,7 +238,7 @@ type alias Model =
     , board : Board
     , inputBuffer : List Char
     , gameState : GameState
-    , toastMessage : Maybe String
+    , toastMessages : List String
     }
 
 
@@ -253,7 +253,7 @@ init _ =
       , board = []
       , inputBuffer = []
       , gameState = Playing
-      , toastMessage = Nothing
+      , toastMessages = []
       }
     , Random.generate SetWord index
     )
@@ -264,7 +264,7 @@ init _ =
 
 
 type Msg
-    = Noop
+    = NoOp
     | SetWord Int
     | Guess Char
     | Backspace
@@ -286,7 +286,7 @@ update msg model =
             List.length model.inputBuffer == maxWordLength
     in
     case msg of
-        Noop ->
+        NoOp ->
             ( model, Cmd.none )
 
         SetWord index ->
@@ -304,7 +304,9 @@ update msg model =
             case model.gameState of
                 Playing ->
                     if not isInputBufferFull && not isMaxTurnCountReached then
-                        ( { model | inputBuffer = List.append model.inputBuffer [ letter ] }, Cmd.none )
+                        ( { model | inputBuffer = List.append model.inputBuffer [ letter ] }
+                        , Cmd.none
+                        )
 
                     else
                         ( model, Cmd.none )
@@ -315,23 +317,27 @@ update msg model =
         Backspace ->
             ( { model
                 | inputBuffer =
-                    case listInit model.inputBuffer of
-                        Just chars ->
-                            chars
-
-                        Nothing ->
-                            []
+                    model.inputBuffer
+                        |> listInit
+                        |> Maybe.withDefault []
               }
             , Cmd.none
             )
 
         ShowToast message ->
-            ( { model | toastMessage = Just message }
-            , Task.perform (\_ -> HideToast) (Process.sleep 2000)
+            ( { model | toastMessages = model.toastMessages |> List.append [ message ] }
+            , Task.perform (\_ -> HideToast) (Process.sleep 1250)
             )
 
         HideToast ->
-            ( { model | toastMessage = Nothing }, Cmd.none )
+            ( { model
+                | toastMessages =
+                    model.toastMessages
+                        |> listInit
+                        |> Maybe.withDefault []
+              }
+            , Cmd.none
+            )
 
         Submit ->
             let
@@ -351,7 +357,13 @@ update msg model =
                 isInputBufferAGuessableWord =
                     List.member (String.fromList model.inputBuffer) guessableWords
             in
-            if isInputBufferFull && not isMaxTurnCountReached && isInputBufferAGuessableWord then
+            if model.gameState == Playing && not isInputBufferFull then
+                update (ShowToast "Not enough letters") model
+
+            else if isInputBufferFull && not isInputBufferAGuessableWord then
+                update (ShowToast "Not in word list") model
+
+            else if isInputBufferFull && not isMaxTurnCountReached && isInputBufferAGuessableWord then
                 ( { model
                     | board = List.append model.board [ newRow ]
                     , inputBuffer = []
@@ -359,9 +371,6 @@ update msg model =
                   }
                 , Cmd.none
                 )
-
-            else if isInputBufferFull && not isInputBufferAGuessableWord then
-                update (ShowToast "Not in word list") model
 
             else
                 ( model, Cmd.none )
@@ -478,14 +487,13 @@ view model =
                 _ ->
                     text ""
 
-        toastContents : List (Html Msg)
-        toastContents =
-            case model.toastMessage of
-                Just message ->
-                    [ text message ]
-
-                Nothing ->
-                    []
+        toastList : List (Html Msg)
+        toastList =
+            model.toastMessages
+                |> List.map
+                    (\message ->
+                        div [ class "toast" ] [ text message ]
+                    )
     in
     div [ class "game" ]
         [ header [] [ h1 [] [ text "elm wordle" ] ]
@@ -506,7 +514,7 @@ view model =
                     ]
                 )
             ]
-        , div [ class "toast" ] toastContents
+        , div [ class "toast-container" ] toastList
         ]
 
 
