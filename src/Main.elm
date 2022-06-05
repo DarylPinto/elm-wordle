@@ -554,7 +554,7 @@ view model =
                     )
     in
     div [ class "game" ]
-        [ header [] [ h1 [] [ text "elm wordle" ] ]
+        [ header [] [ h1 [] [ text "Pintordle" ] ]
         , div [ class "board" ]
             (List.concat
                 [ List.map rowToHtml model.board

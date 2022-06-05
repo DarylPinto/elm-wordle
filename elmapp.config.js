@@ -1,3 +1,3 @@
 module.exports = {
-    homepage: "https://darylpinto.github.io/elm-wordle/"
+    homepage: "https://darylpinto.github.io/pintordle/"
 }
