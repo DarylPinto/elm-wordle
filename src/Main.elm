@@ -1,4 +1,4 @@
-module Main exposing (LetterPosition(..), rowFromGuess)
+port module Main exposing (LetterPosition(..), rowFromGuess)
 
 import Array
 import Basics exposing (..)
@@ -202,6 +202,13 @@ htmlIf condition html =
 
 
 
+---- PORTS ----
+
+
+port copyResultsToClipboard : ( List (List String), Bool ) -> Cmd msg
+
+
+
 ---- SUBSCRIPTIONS ----
 
 
@@ -310,6 +317,7 @@ type Msg
     | Submit
     | ShowToast Float String
     | HideToast
+    | Share
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -331,13 +339,13 @@ update msg model =
         SetWord time ->
             let
                 -- answer will be different each day
-                daySinceEpoch : Int
-                daySinceEpoch =
+                daysSinceEpoch : Int
+                daysSinceEpoch =
                     (time |> Time.posixToMillis) // 1000 // 60 // 60 // 24
 
                 answerIndex : Int
                 answerIndex =
-                    Basics.modBy (Array.length answers) daySinceEpoch
+                    Basics.modBy (Array.length answers) daysSinceEpoch
             in
             ( { model
                 | word =
@@ -426,6 +434,35 @@ update msg model =
 
             else
                 ( model, Cmd.none )
+
+        -- written like trash but it's 4am and i need to get this done asap
+        Share ->
+            ( update (ShowToast 1250 "Copied results to clipboard") model |> Tuple.first
+            , Cmd.batch
+                [ copyResultsToClipboard
+                    ( model.board
+                        |> List.map
+                            (\row ->
+                                row
+                                    |> List.map
+                                        (\( _, color ) ->
+                                            case color of
+                                                Correct ->
+                                                    "🟩"
+
+                                                Present ->
+                                                    "🟨"
+
+                                                _ ->
+                                                    "⬛"
+                                        )
+                            )
+                    , model.gameState
+                        == Win
+                    )
+                , Task.perform (\_ -> HideToast) (Process.sleep 3000)
+                ]
+            )
 
 
 
@@ -534,7 +571,7 @@ view model =
         gameStateText =
             case model.gameState of
                 Win ->
-                    h2 [] [ text "Congratulations!" ]
+                    button [ onClick Share, class "share" ] [ text "Share" ]
 
                 Loss ->
                     div []
