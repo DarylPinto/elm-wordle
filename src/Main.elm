@@ -1,4 +1,4 @@
-module Main exposing (main)
+module Main exposing (LetterPosition(..), rowFromGuess)
 
 import Array
 import Basics exposing (..)
@@ -72,8 +72,44 @@ listUnique xs =
     xs |> Set.fromList |> Set.toList
 
 
+{-| Remove the first occurence of item from list
+-}
+listRemove : a -> List a -> List a
+listRemove item items =
+    case items of
+        [] ->
+            []
+
+        x :: xs ->
+            if item == x then
+                xs
+
+            else
+                x :: listRemove item xs
+
+
 
 -- Utility functions
+
+
+{-| Credit to @genderquery for this algorithm,
+I wasn't able to figure out how to do this elegantly after hours of trying
+-}
+generateTileList : List ( Char, Char ) -> List Char -> List Tile
+generateTileList pairs word =
+    case pairs of
+        [] ->
+            []
+
+        ( guessLetter, wordLetter ) :: xs ->
+            if guessLetter == wordLetter then
+                ( guessLetter, Correct ) :: generateTileList xs word
+
+            else if List.member guessLetter word then
+                ( guessLetter, Present ) :: generateTileList xs (listRemove guessLetter word)
+
+            else
+                ( guessLetter, Absent ) :: generateTileList xs word
 
 
 {-| Given a word and a guess, output a row of tiles representing the guess's accuracy
@@ -81,27 +117,35 @@ listUnique xs =
 rowFromGuess : List Char -> List Char -> Row
 rowFromGuess word guess =
     let
+        missingLetterLength : Int
         missingLetterLength =
             maxWordLength - List.length guess
 
+        emptyTiles : List Tile
         emptyTiles =
             List.repeat missingLetterLength ( ' ', Absent )
 
-        guessLetterTiles =
-            listZip word guess
-                |> List.map
-                    (\( wordLetter, guessLetter ) ->
-                        if guessLetter == wordLetter then
-                            ( guessLetter, Correct )
+        pairs : List ( Char, Char )
+        pairs =
+            listZip guess word
 
-                        else if List.member guessLetter word then
-                            ( guessLetter, Present )
+        incorrectLetters : List Char
+        incorrectLetters =
+            pairs
+                |> List.filterMap
+                    (\( guessLetter, wordLetter ) ->
+                        if guessLetter == wordLetter then
+                            Nothing
 
                         else
-                            ( guessLetter, Absent )
+                            Just wordLetter
                     )
+
+        tileList : List Tile
+        tileList =
+            generateTileList pairs incorrectLetters
     in
-    List.append guessLetterTiles emptyTiles
+    List.append tileList emptyTiles
 
 
 {-| Convert the entire board into a single list of unique tiles
@@ -449,7 +493,13 @@ view model =
                                         [ text (tile |> Tuple.first |> String.fromChar) ]
                             in
                             div
-                                [ class (tile |> Tuple.second |> letterPosToClassName |> String.append "tile ") ]
+                                [ class
+                                    (tile
+                                        |> Tuple.second
+                                        |> letterPosToClassName
+                                        |> String.append "tile "
+                                    )
+                                ]
                                 innerText
                         )
                 )
