@@ -10,9 +10,9 @@ import Html.Attributes exposing (class)
 import Html.Events exposing (onClick)
 import Json.Decode as Decode
 import Process
-import Random
 import Set
 import Task
+import Time
 
 
 turnLimit : Int
@@ -42,8 +42,8 @@ defaultWord =
 {-| Get the first element that satisfies the test
 -}
 listFind : (a -> Bool) -> List a -> Maybe a
-listFind isNeedle haystack =
-    haystack |> List.filter isNeedle |> List.head
+listFind isGood xs =
+    xs |> List.filter isGood |> List.head
 
 
 {-| Get all elements in a list except for the last
@@ -288,18 +288,13 @@ type alias Model =
 
 init : () -> ( Model, Cmd Msg )
 init _ =
-    let
-        answerIndex : Random.Generator Int
-        answerIndex =
-            Random.int 0 ((answers |> Array.length) - 1)
-    in
     ( { word = defaultWord |> String.toList
       , board = []
       , inputBuffer = []
       , gameState = Playing
       , toastMessages = []
       }
-    , Random.generate SetWord answerIndex
+    , Task.perform SetWord Time.now
     )
 
 
@@ -309,7 +304,7 @@ init _ =
 
 type Msg
     = NoOp
-    | SetWord Int
+    | SetWord Time.Posix
     | Guess Char
     | Backspace
     | Submit
@@ -333,7 +328,17 @@ update msg model =
         NoOp ->
             ( model, Cmd.none )
 
-        SetWord answerIndex ->
+        SetWord time ->
+            let
+                -- answer will be different each day
+                daySinceEpoch : Int
+                daySinceEpoch =
+                    (time |> Time.posixToMillis) // 1000 // 60 // 60 // 24
+
+                answerIndex : Int
+                answerIndex =
+                    Basics.modBy (Array.length answers) daySinceEpoch
+            in
             ( { model
                 | word =
                     answers
