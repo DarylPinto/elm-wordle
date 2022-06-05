@@ -1,15 +1,15 @@
 {
-  "main.css": "/elm-wordle/static/css/main.5559be7d.chunk.css",
-  "main.js": "/elm-wordle/static/js/main.bfe86035.chunk.js",
-  "main.js.map": "/elm-wordle/static/js/main.bfe86035.chunk.js.map",
-  "runtime~main.js": "/elm-wordle/static/js/runtime~main.96d31402.js",
-  "runtime~main.js.map": "/elm-wordle/static/js/runtime~main.96d31402.js.map",
-  "vendors~main.js": "/elm-wordle/static/js/vendors~main.354e092f.chunk.js",
-  "vendors~main.js.map": "/elm-wordle/static/js/vendors~main.354e092f.chunk.js.map",
-  "./service-worker.js": "/elm-wordle/./service-worker.js",
-  "favicon.ico": "/elm-wordle/favicon.ico",
-  "index.html": "/elm-wordle/index.html",
-  "logo.svg": "/elm-wordle/logo.svg",
-  "manifest.json": "/elm-wordle/manifest.json",
-  "precache-manifest.336ec9ce1835eccdffc73c15bfc8873c.js": "/elm-wordle/precache-manifest.336ec9ce1835eccdffc73c15bfc8873c.js"
+  "main.css": "/pintordle/static/css/main.5559be7d.chunk.css",
+  "main.js": "/pintordle/static/js/main.3d809271.chunk.js",
+  "main.js.map": "/pintordle/static/js/main.3d809271.chunk.js.map",
+  "runtime~main.js": "/pintordle/static/js/runtime~main.5872bd70.js",
+  "runtime~main.js.map": "/pintordle/static/js/runtime~main.5872bd70.js.map",
+  "vendors~main.js": "/pintordle/static/js/vendors~main.354e092f.chunk.js",
+  "vendors~main.js.map": "/pintordle/static/js/vendors~main.354e092f.chunk.js.map",
+  "./service-worker.js": "/pintordle/./service-worker.js",
+  "favicon.ico": "/pintordle/favicon.ico",
+  "index.html": "/pintordle/index.html",
+  "logo.svg": "/pintordle/logo.svg",
+  "manifest.json": "/pintordle/manifest.json",
+  "precache-manifest.cbed5039f326d5b5466f218bdb43a1a9.js": "/pintordle/precache-manifest.cbed5039f326d5b5466f218bdb43a1a9.js"
 }
