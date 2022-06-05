@@ -308,7 +308,7 @@ type Msg
     | Guess Char
     | Backspace
     | Submit
-    | ShowToast String
+    | ShowToast Float String
     | HideToast
 
 
@@ -373,9 +373,9 @@ update msg model =
             , Cmd.none
             )
 
-        ShowToast message ->
+        ShowToast millis message ->
             ( { model | toastMessages = model.toastMessages |> List.append [ message ] }
-            , Task.perform (\_ -> HideToast) (Process.sleep 1250)
+            , Task.perform (\_ -> HideToast) (Process.sleep millis)
             )
 
         HideToast ->
@@ -407,10 +407,13 @@ update msg model =
                     List.member (String.fromList model.inputBuffer) guessableWords
             in
             if model.gameState == Playing && not isInputBufferFull then
-                update (ShowToast "Not enough letters") model
+                update (ShowToast 1250 "Not enough letters") model
+
+            else if model.inputBuffer == String.toList "pinto" then
+                update (ShowToast 2250 "That would be too easy, wouldn't it!") model
 
             else if isInputBufferFull && not isInputBufferAGuessableWord then
-                update (ShowToast "Not in word list") model
+                update (ShowToast 1250 "Not in word list") model
 
             else if isInputBufferFull && not isMaxTurnCountReached && isInputBufferAGuessableWord then
                 ( { model
