@@ -48,6 +48,7 @@ p {
 button {
   font-size: 36px;
   min-width: 50px;
+  touch-action: manipulation;
 }
 
 .game {
@@ -212,7 +213,8 @@ button {
 }
 
 button.share {
-  font-family: "Source Sans Pro", "Trebuchet MS", "Lucida Grande", "Bitstream Vera Sans", "Helvetica Neue", sans-serif;
+  font-family: "Source Sans Pro", "Trebuchet MS", "Lucida Grande",
+    "Bitstream Vera Sans", "Helvetica Neue", sans-serif;
   font-weight: bold;
   background: var(--correct-color);
   color: white;
