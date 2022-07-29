@@ -12,6 +12,20 @@ isPintoWord word =
     List.any (\( pintoLetter, wordLetter ) -> pintoLetter == wordLetter) pairs
 
 
+tooSimilar : String -> Bool
+tooSimilar word =
+    let
+        pintoLetters =
+            String.toList "pinto"
+    in
+    (word
+        |> String.toList
+        |> List.filter (\char -> pintoLetters |> List.member char)
+        |> List.length
+    )
+        > 3
+
+
 {-| List of all possible words that can be guessed
 -}
 guessableWords : List String
