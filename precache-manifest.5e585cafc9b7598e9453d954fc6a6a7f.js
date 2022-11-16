@@ -4,7 +4,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/pintordle/favicon.ico"
   },
   {
-    "revision": "0dd6047aab1e5c50d64da90b1dddca34",
+    "revision": "ee3450b56feacf9d88f44596d78aefa2",
     "url": "/pintordle/index.html"
   },
   {
@@ -16,19 +16,19 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/pintordle/manifest.json"
   },
   {
-    "revision": "8e0431e68d9cc7d62eac",
-    "url": "/pintordle/static/css/main.4895ecd6.chunk.css"
+    "revision": "63a2029d747cfb0a812f",
+    "url": "/pintordle/static/css/main.11595014.chunk.css"
   },
   {
-    "revision": "8e0431e68d9cc7d62eac",
-    "url": "/pintordle/static/js/main.8e0431e6.chunk.js"
+    "revision": "63a2029d747cfb0a812f",
+    "url": "/pintordle/static/js/main.63a2029d.chunk.js"
   },
   {
     "revision": "5872bd709cdc4432368a",
     "url": "/pintordle/static/js/runtime~main.5872bd70.js"
   },
   {
-    "revision": "354e092f0aa2734f8f4c",
-    "url": "/pintordle/static/js/vendors~main.354e092f.chunk.js"
+    "revision": "b17b319b1ad2b352f0ab",
+    "url": "/pintordle/static/js/vendors~main.b17b319b.chunk.js"
   }
 ]);
