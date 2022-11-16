@@ -1,15 +1,7 @@
 module Dictionary exposing (answers, guessableWords)
 
 import Array exposing (Array)
-
-
-isPintoWord : String -> Bool
-isPintoWord word =
-    let
-        pairs =
-            List.map2 Tuple.pair (String.toList "pinto") (String.toList word)
-    in
-    List.any (\( pintoLetter, wordLetter ) -> pintoLetter == wordLetter) pairs
+import Common exposing (isPintoWord)
 
 
 {-| List of all possible words that can be guessed
@@ -20894,7 +20886,6 @@ uniqueGuessableWords =
     , "zweig"
     , "zwick"
     ]
-        |> List.filter isPintoWord
 
 
 {-| List of all possible answers

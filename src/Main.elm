@@ -4,6 +4,7 @@ import Array
 import Basics exposing (..)
 import Browser
 import Browser.Events
+import Common exposing (isPintoWord)
 import Dictionary exposing (answers, guessableWords)
 import Html exposing (..)
 import Html.Attributes exposing (class)
@@ -398,6 +399,9 @@ update msg model =
 
         Submit ->
             let
+                inputWord =
+                    String.fromList model.inputBuffer
+
                 newRow =
                     rowFromGuess model.word model.inputBuffer
 
@@ -412,18 +416,24 @@ update msg model =
                         Playing
 
                 isInputBufferAGuessableWord =
-                    List.member (String.fromList model.inputBuffer) guessableWords
+                    List.member inputWord guessableWords
+
+                isInputAPintoWord =
+                    isPintoWord inputWord
             in
             if model.gameState == Playing && not isInputBufferFull then
                 update (ShowToast 1250 "Not enough letters") model
 
-            else if model.inputBuffer == String.toList "pinto" then
-                update (ShowToast 2250 "That would be too easy, wouldn't it!") model
+            else if inputWord == "pinto" then
+                update (ShowToast 2250 "That would be too easy, wouldn't it?") model
+
+            else if isInputBufferFull && isInputBufferAGuessableWord && not isInputAPintoWord then
+                update (ShowToast 3000 "Word does not have any letters in the same position as \"PINTO\"") model
 
             else if isInputBufferFull && not isInputBufferAGuessableWord then
                 update (ShowToast 1250 "Not in word list") model
 
-            else if isInputBufferFull && not isMaxTurnCountReached && isInputBufferAGuessableWord then
+            else if isInputBufferFull && not isMaxTurnCountReached && isInputBufferAGuessableWord && isInputAPintoWord then
                 ( { model
                     | board = List.append model.board [ newRow ]
                     , inputBuffer = []
