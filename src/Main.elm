@@ -191,6 +191,110 @@ toUniqueTiles board =
         |> List.map (\( char, int ) -> ( char, intToLetterPosition int ))
 
 
+{-| Serialize `LetterPosition` type into a string
+-}
+letterPosToString : LetterPosition -> String
+letterPosToString pos =
+    case pos of
+        Correct ->
+            "correct"
+
+        Present ->
+            "present"
+
+        Absent ->
+            "absent"
+
+        Unknown ->
+            ""
+
+
+{-| Parse a string into a `LetterPosition`
+-}
+stringToLetterPos : String -> LetterPosition
+stringToLetterPos pos =
+    case pos of
+        "correct" ->
+            Correct
+
+        "present" ->
+            Present
+
+        "absent" ->
+            Absent
+
+        _ ->
+            Unknown
+
+
+{-| Converts data coming from the javascript side via ports into a `Board` and
+`GameState` that we can use in our model
+-}
+parseJsSaveData : JsSaveData -> ( Board, GameState )
+parseJsSaveData ( jsBoard, jsGameState ) =
+    let
+        jsTileToTile : ( String, String ) -> Tile
+        jsTileToTile tile =
+            ( tile
+                |> Tuple.first
+                |> String.uncons
+                |> Maybe.map Tuple.first
+                |> Maybe.withDefault 'a'
+            , tile
+                |> Tuple.second
+                |> stringToLetterPos
+            )
+
+        board =
+            jsBoard |> List.map (\row -> row |> List.map jsTileToTile)
+
+        gameState =
+            case jsGameState of
+                "win" ->
+                    Win
+
+                "loss" ->
+                    Loss
+
+                _ ->
+                    Playing
+    in
+    ( board, gameState )
+
+
+{-| Converts data from our model (namely the `Board` and `GameState`) into a format
+that we can transfer over to the javascript side via ports
+-}
+toJsSaveData : ( Board, GameState ) -> JsSaveData
+toJsSaveData ( board, gameState ) =
+    let
+        toJsTile : Tile -> ( String, String )
+        toJsTile tile =
+            ( tile
+                |> Tuple.first
+                |> String.fromChar
+            , tile
+                |> Tuple.second
+                |> letterPosToString
+            )
+
+        jsBoard =
+            board |> List.map (\row -> row |> List.map toJsTile)
+
+        jsGameState =
+            case gameState of
+                Win ->
+                    "win"
+
+                Loss ->
+                    "loss"
+
+                Playing ->
+                    "playing"
+    in
+    ( jsBoard, jsGameState )
+
+
 {-| Used for conditional rendering
 -}
 htmlIf : Bool -> Html Msg -> Html Msg
@@ -207,6 +311,12 @@ htmlIf condition html =
 
 
 port copyResultsToClipboard : ( List (List String), Bool ) -> Cmd msg
+
+
+port save : JsSaveData -> Cmd msg
+
+
+port load : (JsSaveData -> msg) -> Sub msg
 
 
 
@@ -249,7 +359,10 @@ subscriptions _ =
         keyDecoder =
             Decode.map toKey (Decode.field "key" Decode.string)
     in
-    Browser.Events.onKeyDown keyDecoder
+    Sub.batch
+        [ Browser.Events.onKeyDown keyDecoder
+        , load LoadSaveData
+        ]
 
 
 
@@ -279,6 +392,18 @@ type GameState
     = Win
     | Loss
     | Playing
+
+
+type alias JsBoard =
+    List (List ( String, String ))
+
+
+type alias JsGameState =
+    String
+
+
+type alias JsSaveData =
+    ( JsBoard, JsGameState )
 
 
 
@@ -313,6 +438,7 @@ init _ =
 type Msg
     = NoOp
     | SetWord Time.Posix
+    | LoadSaveData JsSaveData
     | Guess Char
     | Backspace
     | Submit
@@ -355,6 +481,15 @@ update msg model =
                         |> Maybe.withDefault defaultWord
                         |> String.toList
               }
+            , Cmd.none
+            )
+
+        LoadSaveData data ->
+            let
+                ( newBoard, newGameState ) =
+                    parseJsSaveData data
+            in
+            ( { model | board = newBoard, gameState = newGameState }
             , Cmd.none
             )
 
@@ -434,12 +569,16 @@ update msg model =
                 update (ShowToast 1250 "Not in word list") model
 
             else if isInputBufferFull && not isMaxTurnCountReached && isInputBufferAGuessableWord && isInputAPintoWord then
+                let
+                    newBoard =
+                        List.append model.board [ newRow ]
+                in
                 ( { model
-                    | board = List.append model.board [ newRow ]
+                    | board = newBoard
                     , inputBuffer = []
                     , gameState = newGameState
                   }
-                , Cmd.none
+                , save <| toJsSaveData ( newBoard, newGameState )
                 )
 
             else
@@ -482,22 +621,6 @@ update msg model =
 view : Model -> Html Msg
 view model =
     let
-        -- Convert LetterPosition to CSS color
-        letterPosToClassName : LetterPosition -> String
-        letterPosToClassName pos =
-            case pos of
-                Correct ->
-                    "correct"
-
-                Present ->
-                    "present"
-
-                Absent ->
-                    "absent"
-
-                Unknown ->
-                    ""
-
         -- List of 'letter' buttons to guess with
         buttonList : String -> List (Html Msg)
         buttonList str =
@@ -517,7 +640,7 @@ view model =
                             tileClassName =
                                 case tileForThisLetter of
                                     Just tile ->
-                                        tile |> Tuple.second |> letterPosToClassName
+                                        tile |> Tuple.second |> letterPosToString
 
                                     Nothing ->
                                         ""
@@ -551,7 +674,7 @@ view model =
                                 [ class
                                     (tile
                                         |> Tuple.second
-                                        |> letterPosToClassName
+                                        |> letterPosToString
                                         |> String.append "tile "
                                     )
                                 ]
