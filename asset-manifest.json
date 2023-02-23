@@ -1,7 +1,7 @@
 {
-  "main.css": "/pintordle/static/css/main.11595014.chunk.css",
-  "main.js": "/pintordle/static/js/main.63a2029d.chunk.js",
-  "main.js.map": "/pintordle/static/js/main.63a2029d.chunk.js.map",
+  "main.css": "/pintordle/static/css/main.183c54f5.chunk.css",
+  "main.js": "/pintordle/static/js/main.9003143c.chunk.js",
+  "main.js.map": "/pintordle/static/js/main.9003143c.chunk.js.map",
   "runtime~main.js": "/pintordle/static/js/runtime~main.5872bd70.js",
   "runtime~main.js.map": "/pintordle/static/js/runtime~main.5872bd70.js.map",
   "vendors~main.js": "/pintordle/static/js/vendors~main.b17b319b.chunk.js",
@@ -11,5 +11,5 @@
   "index.html": "/pintordle/index.html",
   "logo.svg": "/pintordle/logo.svg",
   "manifest.json": "/pintordle/manifest.json",
-  "precache-manifest.5e585cafc9b7598e9453d954fc6a6a7f.js": "/pintordle/precache-manifest.5e585cafc9b7598e9453d954fc6a6a7f.js"
+  "precache-manifest.8b260f2aeba3b3ecd168f86ff0e36fef.js": "/pintordle/precache-manifest.8b260f2aeba3b3ecd168f86ff0e36fef.js"
 }
