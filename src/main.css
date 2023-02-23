@@ -245,12 +245,13 @@ button.share:after {
   content: "Nice work!";
   pointer-events: none;
   animation-name: fadeout;
-  animation-direction: forwards;
-  animation-duration: 4s;
+  animation-fill-mode: forwards;
+  animation-delay: 2s;
+  animation-duration: 1s;
   display: flex;
   justify-content: center;
   align-items: center;
-  opacity: 0;
+  opacity: 1;
 }
 
 @keyframes fadeout {
