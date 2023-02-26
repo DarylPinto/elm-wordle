@@ -562,24 +562,28 @@ update msg model =
             else if inputWord == "pinto" then
                 update (ShowToast 2250 "That would be too easy, wouldn't it?") model
 
-            else if isInputBufferFull && isInputBufferAGuessableWord && not isInputAPintoWord then
-                update (ShowToast 3000 "Word does not have any letters in the same position as \"PINTO\"") model
+            else if isInputBufferFull then
+                if not isInputBufferAGuessableWord then
+                    update (ShowToast 1250 "Not in word list") model
 
-            else if isInputBufferFull && not isInputBufferAGuessableWord then
-                update (ShowToast 1250 "Not in word list") model
+                else if not isInputAPintoWord then
+                    update (ShowToast 3000 "Word does not have any letters in the same position as \"PINTO\"") model
 
-            else if isInputBufferFull && not isMaxTurnCountReached && isInputBufferAGuessableWord && isInputAPintoWord then
-                let
-                    newBoard =
-                        List.append model.board [ newRow ]
-                in
-                ( { model
-                    | board = newBoard
-                    , inputBuffer = []
-                    , gameState = newGameState
-                  }
-                , save <| toJsSaveData ( newBoard, newGameState )
-                )
+                else if not isMaxTurnCountReached then
+                    let
+                        newBoard =
+                            List.append model.board [ newRow ]
+                    in
+                    ( { model
+                        | board = newBoard
+                        , inputBuffer = []
+                        , gameState = newGameState
+                      }
+                    , save <| toJsSaveData ( newBoard, newGameState )
+                    )
+
+                else
+                    ( model, Cmd.none )
 
             else
                 ( model, Cmd.none )

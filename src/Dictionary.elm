@@ -8,7 +8,7 @@ import Common exposing (isPintoWord)
 -}
 guessableWords : List String
 guessableWords =
-    List.append uniqueGuessableWords answerList
+    List.append uniqueGuessableWords reasonableWords
 
 
 {-| Array (not List) of all possible answers
@@ -20888,10 +20888,11 @@ uniqueGuessableWords =
     ]
 
 
-{-| List of all possible answers
+{-| List of all five letter words that could be reasonable answers. However, they
+are not necessarily "pinto" words
 -}
-answerList : List String
-answerList =
+reasonableWords : List String
+reasonableWords =
     [ "bible"
     , "exist"
     , "ghost"
@@ -21760,4 +21761,10 @@ answerList =
     , "merry"
     , "skill"
     ]
-        |> List.filter isPintoWord
+
+
+{-| List of Pintordle answers
+-}
+answerList : List String
+answerList =
+    reasonableWords |> List.filter isPintoWord
