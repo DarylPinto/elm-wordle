@@ -59,7 +59,7 @@ button {
   max-width: var(--game-width);
   width: 100%;
   margin: 0 auto;
-  height: calc(100svh - env(safe-area-inset-bottom));
+  height: calc(100dvh - env(safe-area-inset-bottom));
 }
 
 /* Game Board */
