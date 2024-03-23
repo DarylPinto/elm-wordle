@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/pintordle/precache-manifest.1cd7fe9fdf73546e1f3619a7ea5cd50b.js"
+  "/pintordle/precache-manifest.97d9f280f7a3e395baa5d9a19c2b0ea4.js"
 );
 
 workbox.core.skipWaiting();

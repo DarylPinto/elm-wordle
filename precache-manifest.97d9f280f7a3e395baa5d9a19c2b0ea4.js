@@ -4,7 +4,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/pintordle/favicon.ico"
   },
   {
-    "revision": "87cbc4b6b5bf8e3ee33ea6c97f536ee8",
+    "revision": "9cb900c820a8ffd12f2411fe05dc1e49",
     "url": "/pintordle/index.html"
   },
   {
@@ -16,12 +16,12 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/pintordle/manifest.json"
   },
   {
-    "revision": "ae5e5b33dd1258be1aef",
+    "revision": "eef10dfcd248953552b6",
     "url": "/pintordle/static/css/main.b6ad2d5e.chunk.css"
   },
   {
-    "revision": "ae5e5b33dd1258be1aef",
-    "url": "/pintordle/static/js/main.ae5e5b33.chunk.js"
+    "revision": "eef10dfcd248953552b6",
+    "url": "/pintordle/static/js/main.eef10dfc.chunk.js"
   },
   {
     "revision": "5872bd709cdc4432368a",
