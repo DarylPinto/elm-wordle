@@ -513,6 +513,7 @@ update msg model =
                     model.inputBuffer
                         |> listInit
                         |> Maybe.withDefault []
+                , toastMessages = []
               }
             , Cmd.none
             )
