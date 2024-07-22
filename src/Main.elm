@@ -513,7 +513,12 @@ update msg model =
                     model.inputBuffer
                         |> listInit
                         |> Maybe.withDefault []
-                , toastMessages = []
+                , toastMessages =
+                    if model.gameState == Playing then
+                        []
+
+                    else
+                        model.toastMessages
               }
             , Cmd.none
             )
@@ -663,27 +668,23 @@ view model =
                     |> List.map
                         (\tile ->
                             let
-                                -- if the character in this tile is empty (' '),
-                                -- then don't put any children within the tile
-                                -- HTML. This allows us to style empty tiles with
-                                -- CSS very easily
-                                innerText : List (Html Msg)
-                                innerText =
+                                className : String
+                                className =
                                     if (tile |> Tuple.first) == ' ' then
-                                        []
+                                        "tile empty "
 
                                     else
-                                        [ text (tile |> Tuple.first |> String.fromChar) ]
+                                        "tile not-empty "
                             in
                             div
                                 [ class
                                     (tile
                                         |> Tuple.second
                                         |> letterPosToString
-                                        |> String.append "tile "
+                                        |> String.append className
                                     )
                                 ]
-                                innerText
+                                [ text (tile |> Tuple.first |> String.fromChar) ]
                         )
                 )
 
@@ -702,7 +703,7 @@ view model =
         -- Rows of empty tiles representing remaining turns
         remainingRows : List (Html Msg)
         remainingRows =
-            div [ class "row" ] (List.repeat maxWordLength (div [ class "tile" ] []))
+            div [ class "row" ] (List.repeat maxWordLength (div [ class "tile empty" ] []))
                 |> List.repeat (remainingTurnCount - 1)
 
         gameStateText : Html Msg

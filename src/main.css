@@ -108,11 +108,11 @@ button {
   }
 }
 
-.board .row .tile:empty {
+.board .row .tile.empty {
   border-color: var(--absent-color);
 }
 
-.board .row .tile:not(.tile:empty) {
+.board .row .tile.not-empty {
   animation-name: bounce;
   animation-duration: 0.2s;
 }
